@@ -1,0 +1,6 @@
+# Put any data folders in here so they don't get committed
+SOLOR-GUDID-FULL-20250915 RocksKb
+SOLOR-GUDID-FULL-20250915 RocksKb.zip
+
+.idea/
+.vscode/
