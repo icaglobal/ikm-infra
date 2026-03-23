@@ -52,7 +52,7 @@ COPY --from=builder /build/tinkar-core/service/target/service-*.jar app.jar
 # Copy pre-extracted RocksDB data
 # Users: set ROCKSDB_DATA_DIR to the name of your unzipped data folder
 ARG ROCKSDB_DATA_DIR="SOLOR-GUDID-FULL-20250915 RocksKb"
-COPY ${ROCKSDB_DATA_DIR}/ /app/data/
+COPY ${ROCKSDB_DATA_DIR}/ /app/data/gudid/
 
 # Fix ownership
 RUN chown -R tinkar:tinkar /app
@@ -67,5 +67,6 @@ EXPOSE 8085 9095
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \
     CMD curl -f http://localhost:8085/actuator/health || exit 1
 
-# Run with preview features enabled
-ENTRYPOINT ["java", "--enable-preview", "-jar", "app.jar"]
+# Remove stale Lucene lock files that may have been baked in from a previous run,
+# then start the application.
+ENTRYPOINT ["sh", "-c", "find /app/data -name 'write.lock' -delete && exec java --enable-preview -jar app.jar \"$@\"", "--"]
